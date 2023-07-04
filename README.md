@@ -9,8 +9,8 @@ Developped by:
 # Run the project
 
 ```console
-(/) cd sudoku-project
-(/sudoku-project) sbt
-(sbt terminal): compile
-(sbt terminal): run
+/> cd sudoku-project
+/sudoku-project> sbt
+sbt:sudoku-solver> compile
+sbt:sudoku-solver> run
 ```

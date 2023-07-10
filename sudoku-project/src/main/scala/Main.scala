@@ -8,31 +8,46 @@ import zio.nio.channels._
 import zio.nio.file.{Path, Files}
 import zio.json._
 
-import scala.compiletime.ops.int
-import scala.compiletime.ops.any
-import scala.io.Source
+import zio.nio.file._
+import io.circe._
+import io.circe.generic.semiauto._
+
+//import scala.compiletime.ops.int
+//import scala.compiletime.ops.any
+//import scala.io.Source
 
 object Main extends ZIOAppDefault {
 
-  case class Sudoku(grid: List[List[Option[Int]]])
+  case class Sudoku(cells: List[List[Option[Int]]])
 
-  type Grid = List[List[Option[Int]]]
+  type Board = List[List[Option[Int]]]
   type Position = (Int, Int)
   type SudokuData = (IO[String, Sudoku], Grid)
 
-  /* what ever
-  def readSudokuFile(filePath: String): Task[Sudoku] = {
-    for {
-      content <- readFile(filePath)
-      sudoku <- ZIO.fromEither(content.fromJson[Sudoku])
-    } yield sudoku
+  object SudokuGrid {
+    implicit val encoder: Encoder[Sudoku] = deriveEncoder[Sudoku]
+    implicit val decoder: Decoder[Sudoku] = deriveDecoder[Sudoku]
   }
 
-  def sudokuToGrid(sudoku: Sudoku): Array[Array[Option[Int]]] =
-    sudoku.grid*/
+
+  //what ever
+  def extractSudokuFromFile(filename: String): Task[Sudoku] = {
+    ZIO
+      .effect(Files.readAllBytes(Paths.get(filename)))
+      .flatMap(bytes => ZIO.fromEither(bytes.fromJson[Sudoku]))
+      .mapError(ex => new RuntimeException(s"Failed to extract Sudoku from file: $filename", ex))
+  }
+
+  def printSudoku(grid: Sudoku): Task[Unit] = {
+    ZIO.foreach_(grid.cells) { row =>
+      ZIO.foreach_(row) { cell =>
+        putStr(s"$cell ")
+      } *> putStrLn("")
+    }
+  }
 
 
-  // Read the JSON file and return the parsed Sudoku data along with the raw grid
+  /* Read the JSON file and return the parsed Sudoku data along with the raw grid
   def readSudokuFromJson(path: String): SudokuData = {
     val file = new File(path)
     if (!file.exists() || !file.isFile) { // handle invalid file
@@ -131,13 +146,14 @@ object Main extends ZIOAppDefault {
         value <- grid.cells(row)(column).value
       } yield value
     }
-  }
+  }*/
 
   def run: ZIO[Any, Throwable, Unit] =
     for {
       _ <- Console.print("Enter the path to the JSON file containing the Sudoku problem:")
       path <- Console.readLine
-      sudoku <- readSudokuFile(filePath)
+      sudoku <- extractSudokuFromFile(filePath)
+      _ <- printSudoku(sudoku)
       _ <-  Console.printLine(s"You entered: $path")
 
       // Add your Sudoku solver logic here, utilizing ZIO and interacting with the ZIO Console

@@ -15,7 +15,8 @@ lazy val root = project
       "dev.zio" %% "zio-json" % "0.3.0-RC10",
       "dev.zio" %% "zio-streams" % "2.0.15",
       "io.circe" %% "circe-generic" % "0.14.1",
-      "io.circe" %% "circe-parser" % "0.14.1"
+      "io.circe" %% "circe-parser" % "0.14.1",
+      // "org.scalatest" %% "scalatest" % "3.2.10" % "test"
       // Add other libraries like zio-nio and zip-json here if needed
     ).map(_ % Compile),
     libraryDependencies ++= Seq(

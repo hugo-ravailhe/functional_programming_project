@@ -21,11 +21,9 @@ import io.circe.generic.auto._
 
 object Main extends ZIOAppDefault {
 
-
-
   type Board = List[List[Option[Int]]]
-  //type Position = (Int, Int)
-  //type SudokuData = (IO[String, Sudoku], Grid)
+  // type Position = (Int, Int)
+  // type SudokuData = (IO[String, Sudoku], Grid)
 
   /*object SudokuGrid {
     implicit val encoder: Encoder[Sudoku] = deriveEncoder[Sudoku]
@@ -35,25 +33,27 @@ object Main extends ZIOAppDefault {
   case class SudokuBoard(grid: List[List[Option[Int]]])
 
   object SudokuBoard {
-    implicit val decoder: JsonDecoder[SudokuBoard] = DeriveJsonDecoder.gen[SudokuBoard]
-    implicit val encoder: JsonEncoder[SudokuBoard] = DeriveJsonEncoder.gen[SudokuBoard]
+    implicit val decoder: JsonDecoder[SudokuBoard] =
+      DeriveJsonDecoder.gen[SudokuBoard]
+    implicit val encoder: JsonEncoder[SudokuBoard] =
+      DeriveJsonEncoder.gen[SudokuBoard]
   }
 
   def extractSudokuFromFile(path: String): ZIO[Any, Nothing, String] = {
     ZIO.succeed(Source.fromFile(path).mkString)
   }
 
-  def fillingBoard(stringBoard: String): Board = { //board
-    val convertedBoard = stringBoard.fromJson[SudokuBoard] //board
-    println(convertedBoard)
+  def fillingBoard(stringBoard: String): Board = { // board
+    val convertedBoard = stringBoard.fromJson[SudokuBoard] // board
     convertedBoard match {
       case Right(i) =>
-        val rawdata = i.grid.map(row => row.map(value => if (value != None) value else None)) //value in (1,2,3,4,5,6,7,8,9)  or List(1,2,3,4,5,6,7,8,9).contains(value)
+        val rawdata = i.grid.map(row =>
+          row.map(value => if (value != None) value else None)
+        ) // value in (1,2,3,4,5,6,7,8,9)  or List(1,2,3,4,5,6,7,8,9).contains(value)
 
         // Perform a simple validation to check if the grid has a valid size
         if (rawdata.length == 9 && rawdata.forall(_.length == 9)) {
           println("Successfully parsed and validated JSON input")
-          println(rawdata)
           rawdata
         } else {
           println("Invalid Sudoku grid")
@@ -93,33 +93,38 @@ object Main extends ZIOAppDefault {
           .orElse(ZIO.succeed(Array.empty[Array[Option[Int]]]))
     }*/
 
+  def solve(grid: Board): Board = {
+    def solveRec(grid: Board, row: Int, column: Int): Option[Board] = {
+      if (row == 9)
+        Some(grid) // Puzzle solved
+      else {
+        val nextRow = if (column == 8) row + 1 else row
+        val nextColumn = (column + 1) % 9
 
-def solve(grid: Board): Board = {
-      def solveRec(grid: Board, row: Int, column: Int): Option[Board] = {
-        if (row == 9)
-          Some(grid) // Puzzle solved
-        else {
-          val nextRow = if (column == 8) row + 1 else row
-          val nextColumn = (column + 1) % 9
+        val cell = grid(row)(column)
 
-          val cell = grid(row)(column)
-
-          cell match {
-            case Some(_) => solveRec(grid, nextRow, nextColumn) // Skip filled cells
-            case None =>
-              val validValues = getValidValues(grid, row, column)
-              validValues.view
-                .flatMap(value => solveRec(grid.updated(row, grid(row).updated(column, Some(value))), nextRow, nextColumn))
-                .headOption
-          }
+        cell match {
+          case Some(_) =>
+            solveRec(grid, nextRow, nextColumn) // Skip filled cells
+          case None =>
+            val validValues = getValidValues(grid, row, column)
+            validValues.view
+              .flatMap(value =>
+                solveRec(
+                  grid.updated(row, grid(row).updated(column, Some(value))),
+                  nextRow,
+                  nextColumn
+                )
+              )
+              .headOption
         }
       }
-
-      solveRec(grid, 0, 0).getOrElse(grid)
     }
 
+    solveRec(grid, 0, 0).getOrElse(grid)
+  }
 
-    def getValidValues(grid: Board, row: Int, column: Int): Seq[Int] = {
+  def getValidValues(grid: Board, row: Int, column: Int): Seq[Int] = {
     val usedInRow = grid(row).flatten
     val usedInColumn = grid.map(row => row(column)).flatten
     val startRow = (row / 3) * 3
@@ -132,7 +137,6 @@ def solve(grid: Board): Board = {
 
     (1 to 9).diff(usedInRow ++ usedInColumn ++ usedInSubgrid)
   }
-
 
   /* Read the JSON file and return the parsed Sudoku data along with the raw grid
   def readSudokuFromJson(path: String): SudokuData = {
@@ -196,22 +200,51 @@ def solve(grid: Board): Board = {
     }
   }*/
 
+  def printSudoku(sudokuSolved: Board): ZIO[Any, Throwable, Unit] = {
+    val sudokuString = sudokuSolved
+      .grouped(3)
+      .map { bigGroup =>
+        bigGroup
+          .map { row =>
+            row
+              .grouped(3)
+              .map(_.map {
+                case Some(0)     => "_"
+                case Some(value) => value.toString
+                case None        => "_"
+              }.mkString(" ", " ", " "))
+              .mkString("| ", " | ", " | ")
+          }
+          .mkString("\n")
+      }
+      .mkString(
+        "+-----------------------------+\n",
+        "\n+-----------------------------+\n",
+        "\n+-----------------------------+"
+      )
+    Console.printLine(sudokuString)
+  }
+
   def run: ZIO[Any, Throwable, Unit] =
     for {
-      _ <- Console.print("Enter the path to the JSON file containing the Sudoku problem:")
+      _ <- Console.print(
+        "Enter the path to the JSON file containing the Sudoku problem:"
+      )
       path <- Console.readLine
-      _ <-  Console.printLine(s"You entered: $path")
+      _ <- Console.printLine(s"You entered: $path")
       json <- extractSudokuFromFile(path)
       _ <- Console.print(json)
       grid = fillingBoard(json)
+      _ <- Console.printLine(s"Sudoku to solve:")
+      _ <- printSudoku(grid)
+      _ <- Console.printLine(s"Resolving problem...")
       solvedGrid = solve(grid)
-      _ <- Console.print(solvedGrid)
+      _ <- Console.printLine(s"Sudoku solved:")
+      _ <- printSudoku(solvedGrid)
       // Add your Sudoku solver logic here, utilizing ZIO and interacting with the ZIO Console
-
 
     } yield ()
 }
-
 
 /*
 case class SudokuProblem(grid: Array[Array[Option[Int]]])
@@ -257,5 +290,3 @@ def readJsonFile(filePath: String): Either[Throwable, String] = {
     Left(new IllegalArgumentException("Invalid file path"))
   }
 }*/
-
-

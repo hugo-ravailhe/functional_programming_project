@@ -30,6 +30,12 @@ cd sudoku-project
 
 Run the application with sbt.
 ```console
+sbt update
+```
+```console
+sbt compile
+```
+```console
 sbt run
 ```
 
@@ -58,3 +64,10 @@ Here is an exemple of the JSON structure.
   ]
 }
 ```
+
+## Backtracking algorithm
+
+Backtracking is an algorithmic technique that is widely used to solve problems by systematically exploring potential solutions. It is particularly effective when dealing with problems that have a large solution space and require making a series of choices.
+At its core, backtracking involves a recursive approach to problem-solving. The algorithm starts by making an initial choice and then explores the consequences of that choice. If the choice leads to a valid solution, the algorithm continues to the next step. However, if the choice leads to an invalid or unsatisfactory solution, the algorithm backtracks to the previous step and tries an alternative choice.
+
+

@@ -41,8 +41,8 @@ object Main extends ZIOAppDefault {
     convertedBoard match {
       case Right(i) =>
         val rawdata = i.grid.map(row =>
-          row.map(value => if (value != None) value else None)
-        ) // value in (1,2,3,4,5,6,7,8,9)  or List(1,2,3,4,5,6,7,8,9).contains(value)
+          row.map(value => if (value.exists(v => v >= 1 && v <= 9)) value else None)
+        ) //check if value is between 1 and 9, if not, replace it with None
 
         // Perform a simple validation to check if the grid has a valid size
         if (rawdata.length == 9 && rawdata.forall(_.length == 9)) {
@@ -54,6 +54,8 @@ object Main extends ZIOAppDefault {
         }
       case Left(i) =>
         println(s"Error: $i")
+        // if value typeof string then it returns this println 
+        println("Veuillez remplir le JSON uniquement avec des entiers entre 1 et 9 ou des null")
         null
     }
   }

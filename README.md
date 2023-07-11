@@ -70,4 +70,10 @@ Here is an exemple of the JSON structure.
 Backtracking is an algorithmic technique that is widely used to solve problems by systematically exploring potential solutions. It is particularly effective when dealing with problems that have a large solution space and require making a series of choices.
 At its core, backtracking involves a recursive approach to problem-solving. The algorithm starts by making an initial choice and then explores the consequences of that choice. If the choice leads to a valid solution, the algorithm continues to the next step. However, if the choice leads to an invalid or unsatisfactory solution, the algorithm backtracks to the previous step and tries an alternative choice.
 
+## Our choices
 
+The data in the algorithm is structured mainly using the Board type, which is a list of lists of Option[Int]. This type represents the Sudoku grid, where each element in the outer list represents a row of the grid, and each element in the inner list represents an individual cell.
+
+We decided to use lists instead of arrays for several reasons. Firstly, lists provide a more flexible and dynamic approach to handle the data in our algorithm. With lists, we can easily add or remove elements without worrying about resizing or copying the entire data structure. This flexibility was important for us as we needed to manipulate and update the Sudoku grid during the solving process.
+
+Another reason for choosing lists is their immutability. By default, lists in Scala are immutable, meaning their elements cannot be modified once created. This immutability aligns well with our functional programming approach, as it ensures safer concurrent programming and eliminates the risk of accidental modifications. Immutability also allows us to reason about our code more easily and avoid unexpected side effects.

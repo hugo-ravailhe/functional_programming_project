@@ -83,3 +83,6 @@ Another reason for choosing lists is their immutability. By default, lists in Sc
 We use the zio-json library for parsing and encoding JSON data in our Sudoku solver algorithm.
 We define implicit decoders and encoders for the SudokuBoard case class using zio-json's DeriveJsonDecoder.gen and DeriveJsonEncoder.gen macros. These implicit instances enable the conversion between JSON and the SudokuBoard case class.
 This function takes a string representation of a Sudoku board in JSON format and converts it into a Board type, which is a List[List[Option[Int]]]. It utilizes the fromJson method provided by zio-json to parse the JSON string into an instance of SudokuBoard, applying the implicit decoder.
+
+### ZIO Console Interaction
+The solver interacts with the ZIO Console by requesting the user to provide a JSON file path containing a Sudoku problem. This input is then used to extract the Sudoku data and initiate the solving process. The solved Sudoku grid is displayed to the user through the console.

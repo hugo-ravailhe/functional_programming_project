@@ -72,8 +72,14 @@ At its core, backtracking involves a recursive approach to problem-solving. The 
 
 ## Our choices
 
+### List
 The data in the algorithm is structured mainly using the Board type, which is a list of lists of Option[Int]. This type represents the Sudoku grid, where each element in the outer list represents a row of the grid, and each element in the inner list represents an individual cell.
 
 We decided to use lists instead of arrays for several reasons. Firstly, lists provide a more flexible and dynamic approach to handle the data in our algorithm. With lists, we can easily add or remove elements without worrying about resizing or copying the entire data structure. This flexibility was important for us as we needed to manipulate and update the Sudoku grid during the solving process.
 
 Another reason for choosing lists is their immutability. By default, lists in Scala are immutable, meaning their elements cannot be modified once created. This immutability aligns well with our functional programming approach, as it ensures safer concurrent programming and eliminates the risk of accidental modifications. Immutability also allows us to reason about our code more easily and avoid unexpected side effects.
+
+### JSON
+We use the zio-json library for parsing and encoding JSON data in our Sudoku solver algorithm.
+We define implicit decoders and encoders for the SudokuBoard case class using zio-json's DeriveJsonDecoder.gen and DeriveJsonEncoder.gen macros. These implicit instances enable the conversion between JSON and the SudokuBoard case class.
+This function takes a string representation of a Sudoku board in JSON format and converts it into a Board type, which is a List[List[Option[Int]]]. It utilizes the fromJson method provided by zio-json to parse the JSON string into an instance of SudokuBoard, applying the implicit decoder.

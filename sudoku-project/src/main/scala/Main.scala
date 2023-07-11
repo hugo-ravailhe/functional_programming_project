@@ -94,31 +94,32 @@ object Main extends ZIOAppDefault {
     }*/
 
 
-  def solve(grid: Board): Option[Board] = {
-    def solveRec(grid: Board, row: Int, column: Int): Option[Board] = {
-      if (row == 9)
-        Some(grid) // Puzzle solved
-      else {
-        val nextRow = if (column == 8) row + 1 else row
-        val nextColumn = (column + 1) % 9
+def solve(grid: Board): Board = {
+      def solveRec(grid: Board, row: Int, column: Int): Option[Board] = {
+        if (row == 9)
+          Some(grid) // Puzzle solved
+        else {
+          val nextRow = if (column == 8) row + 1 else row
+          val nextColumn = (column + 1) % 9
 
-        val cell = grid(row)(column)
+          val cell = grid(row)(column)
 
-        cell match {
-          case Some(_) => solveRec(grid, nextRow, nextColumn) // Skip filled cells
-          case None =>
-            val validValues = getValidValues(grid, row, column)
-            validValues.view
-              .flatMap(value => solveRec(grid.updated(row, grid(row).updated(column,Some(value))), nextRow, nextColumn))
-              .headOption
+          cell match {
+            case Some(_) => solveRec(grid, nextRow, nextColumn) // Skip filled cells
+            case None =>
+              val validValues = getValidValues(grid, row, column)
+              validValues.view
+                .flatMap(value => solveRec(grid.updated(row, grid(row).updated(column, Some(value))), nextRow, nextColumn))
+                .headOption
+          }
         }
       }
+
+      solveRec(grid, 0, 0).getOrElse(grid)
     }
 
-    solveRec(grid, 0, 0)
-  }
 
-  def getValidValues(grid: Board, row: Int, column: Int): Seq[Int] = {
+    def getValidValues(grid: Board, row: Int, column: Int): Seq[Int] = {
     val usedInRow = grid(row).flatten
     val usedInColumn = grid.map(row => row(column)).flatten
     val startRow = (row / 3) * 3

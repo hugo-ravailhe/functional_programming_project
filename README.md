@@ -23,19 +23,19 @@ git clone https://github.com/hugo-ravailhe/functional_programming_project.git
 
 Navigate to the project directory.
 ```console
-/> cd sudoku-project
+cd sudoku-project
 ```
 
 ## Run the project
 
 Run the application with sbt.
 ```console
-/sudoku-project> sbt run
+sbt run
 ```
 
 The application will prompt you for the path to the JSON file containing the Sudoku grid. Enter the full file path and press Enter.
 ```console
-/sbt> Enter the path to the JSON file containing the Sudoku problem: /path/to/sudoku.json
+Enter the path to the JSON file containing the Sudoku problem: /path/to/sudoku.json
 ```
 
 ## JSON Structure

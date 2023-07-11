@@ -86,3 +86,7 @@ This function takes a string representation of a Sudoku board in JSON format and
 
 ### ZIO Console Interaction
 The solver interacts with the ZIO Console by requesting the user to provide a JSON file path containing a Sudoku problem. This input is then used to extract the Sudoku data and initiate the solving process. The solved Sudoku grid is displayed to the user through the console.
+
+
+### Test
+We made an attempt to write tests for our Sudoku solver, but encountered some difficulties that prevented us from successfully implementing them.

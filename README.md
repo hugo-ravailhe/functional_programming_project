@@ -4,7 +4,7 @@ Developped by:
 - LISZEWSKI Benjamin
 - MABECQUE Julien
 - RAVAILHE Hugo
-- TRAN Victor
+- TRAN Victor (2 pseudo hein mdr)
 
 # Run the project
 
